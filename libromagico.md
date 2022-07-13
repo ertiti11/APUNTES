@@ -156,6 +156,17 @@ Una vez cargado el archivo, nos iremos a esta parte donde nos pone *Analisys*, y
 
 
 # LINUX 
+## ENUMERACION
+### DNS
+
+Puede que no encontremos ningun subdominio haciendo **fuzzing**, por lo tanto otra via seria que si vemos el **Puerto 53** abierto, podamos resolver de otras formas otros subdomios:
+
+```bash
+dig axfr cronos.htb @10.10.10.13
+```
+
+
+
 ## MSFVENOM
 
 ### WAR
@@ -364,6 +375,33 @@ https://github.com/carlospolop/PEASS-ng/tere/master/linPEAS
 
 
 # GENERAL
+## SSH
+### AUTHORIZED KEYS
+si por firewall no podemos conectarnos por ssh pero si tenemos ejecucion de comandos o algo por el estilo, podemos hacernos un par de claves con:
+```bash
+ssh-keygen
+```
+e introducirlas en /etc/home/user/.ssh/public.pub.
+
+## SSTI(CREO)(JINJA2)
+en este caso me he encontrado con un file upload en el que no puedo hacer un bypass, pues lo que podemos hacer es una images con el comando que queramos que ejecute python ya que lo que contenga lo va a guardar en una etiqueta **p** por lo tanto si hacer {{}}
+en flask se ejecutara:
+
+
+
+## FUZZING
+### WFUZZ
+#### DIRECTORIOS
+
+```bash
+wfuzz -c -z file,/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt   --hc 404 http://domain/FUZZ
+```
+
+##### SUBDOMINIOS
+
+```bash
+wfuzz -c -f sub-fighter -w top5000.txt -u 'http://target.tld' -H "Host: FUZZ.target.tld" 
+```
 
 
 
