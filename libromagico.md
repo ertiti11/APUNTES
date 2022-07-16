@@ -426,3 +426,13 @@ curl --upload-file appplication-0.1-1.war "http://username:password@localhost:80
 
 
 
+
+# ACTIVE DIRECTORY
+## SMBRELAY
+Para ejecutar este ataque, tanto por ipv4 y por ipv6, se usara una herramienta que es el responder.py.
+sambarelay tipico:
+archivo de configuracion **/usr/share/responder/Responder.conf** se deja tal cual.
+
+```bash
+responder -I eth0 -rdw
+```
